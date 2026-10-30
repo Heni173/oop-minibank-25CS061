@@ -1,5 +1,7 @@
 package model;
 
+import java.io.Serializable;
+
 import exception.AccountNotFoundException;
 import exception.BankException;
 import exception.InsufficientFundsException;
@@ -8,8 +10,10 @@ import model.annotation.Id;
 import model.annotation.MaxLength;
 import model.annotation.Positive;
 
-public abstract class Account implements Transactable, InterestBearing
+public abstract class Account implements Transactable, InterestBearing, Serializable, Comparable<Account>
 {
+    private static final long serialVersionUID = 1L;
+
     @Id
     private final String accountNumber;
     @MaxLength(10)
@@ -20,9 +24,17 @@ public abstract class Account implements Transactable, InterestBearing
 
     private static int accountCounter = 1;
 
-    private static String generateAccountNumber()
+    private static synchronized String generateAccountNumber()
     {
         return String.format("AC%04d", accountCounter++);
+    }
+
+    public static synchronized void setNextAccountNumber(int next)
+    {
+        if(next > accountCounter)
+        {
+            accountCounter = next;
+        }
     }
 
     public Account(String ownerName, long balance)
@@ -136,6 +148,12 @@ public abstract class Account implements Transactable, InterestBearing
     public abstract double interestRate();
 
     public abstract boolean canWithdraw(long amount);
+
+    @Override
+    public int compareTo(Account other)
+    {
+        return accountNumber.compareTo(other.accountNumber);
+    }
 
     @Override
     public String toString()

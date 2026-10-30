@@ -1,0 +1,11 @@
+2026-10-30 13:10:22 | openAccount | Open a new account | args=[SAVINGS, Amit, 1236547890, 1000] | FAILED BankException : Invalid mobile number : 1236547890
+2026-10-30 13:10:46 | openAccount | Open a new account | args=[SAVINGS, Amit, 9876543210, 1000] | OK
+2026-10-30 13:11:10 | deposit | Deposit money | args=[1000, 1000] | FAILED AccountNotFoundException : Account not found : 1000
+2026-10-30 13:11:23 | deposit | Deposit money | args=[AC0001, 1000] | OK
+2026-10-30 13:11:38 | withdraw | Withdraw money | args=[AC0001, 100] | OK
+2026-10-30 13:14:00 | transfer | Transfer money | args=[AC001, AC0002, 100] | FAILED AccountNotFoundException : Account not found : AC001
+2026-10-30 13:14:20 | transfer | Transfer money | args=[AC0001, AC0002, 100] | FAILED AccountNotFoundException : Account not found : AC0002
+2026-10-30 13:14:48 | openAccount | Open a new account | args=[CURRENT, HENI, 9988776655, 1000] | OK
+2026-10-30 13:15:04 | transfer | Transfer money | args=[AC0001, AC0002, 100] | OK
+2026-10-30 13:15:15 | statement | Show account statement | args=[AC0001] | OK
+2026-10-30 13:15:51 | processBatch | Process a batch of transactions | args=[[Command[type=DEPOSIT, accountNumber=AC0001, amount=10], Command[type=DEPOSIT, accountNumber=AC0002...] | OK
