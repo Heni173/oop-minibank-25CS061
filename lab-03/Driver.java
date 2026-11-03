@@ -1,56 +1,45 @@
+// Program: Detecting the first duplicate card using equals()
+
 public class Driver
 {
     public static void main(String[] args)
     {
-        Card[] cards = new Card[5];
+        // Cards to be added one by one (Ace of Spades is repeated)
+        Card[] incoming =
+        {
+            new Card("Ace", "Spades"),
+            new Card("King", "Hearts"),
+            new Card("Queen", "Diamonds"),
+            new Card("Ace", "Spades"),     // duplicate of first
+            new Card("Ten", "Clubs")
+        };
 
+        Card[] cards = new Card[incoming.length];
         int count = 0;
+        boolean found = false;
 
-        Card c1 = new Card("Ace", "Spades");
-
-        cards[count] = c1;
-        count++;
-
-        Card c2 = new Card("King", "Hearts");
-
-        for(int i = 0; i < count; i++)
+        for (int i = 0; i < incoming.length && !found; i++)
         {
-            if(c2.equals(cards[i]))
+            Card current = incoming[i];
+
+            // Check current card against all earlier cards
+            for (int j = 0; j < count; j++)
             {
-                System.out.println("Duplicate found: " + c2);
-                return;
+                if (current.equals(cards[j]))
+                {
+                    System.out.println("Duplicate found: " + current);
+                    found = true;     // stop after the first duplicate
+                    break;
+                }
+            }
+
+            // Add the card only if it is not a duplicate
+            if (!found)
+            {
+                cards[count] = current;
+                count++;
+                System.out.println("Added: " + current);
             }
         }
-
-        cards[count] = c2;
-        count++;
-
-        Card c3 = new Card("Queen", "Diamonds");
-
-        for(int i = 0; i < count; i++)
-        {
-            if(c3.equals(cards[i]))
-            {
-                System.out.println("Duplicate found: " + c3);
-                return;
-            }
-        }
-
-        cards[count] = c3;
-        count++;
-
-        Card c4 = new Card("Ace", "Spades");
-
-        for(int i = 0; i < count; i++)
-        {
-            if(c4.equals(cards[i]))
-            {
-                System.out.println("Duplicate found: " + c4);
-                return;
-            }
-        }
-
-        cards[count] = c4;
-        count++;
     }
 }
