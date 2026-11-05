@@ -1,76 +1,91 @@
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+// Program: Saving and loading objects using Serializable and ObjectOutputStream
 
-public class SaveLoadDemo {
+import java.io.*;
 
-    static class Student implements Serializable {
+public class SaveLoadDemo
+{
+    // Serializable means objects of this class can be saved to a file
+    static class Student implements Serializable
+    {
         private static final long serialVersionUID = 1L;
 
+        int id;
         String name;
         int marks;
+
+        // transient means this field will NOT be saved in the file
         transient String password;
 
-        Student(String name, int marks, String password) {
+        Student(int id, String name, int marks, String password)
+        {
+            this.id = id;
             this.name = name;
             this.marks = marks;
             this.password = password;
         }
 
-        @Override
-        public String toString() {
-            return "Student{name=" + name + ", marks=" + marks + ", password=" + password + "}";
+        public String toString()
+        {
+            return "Student{id=" + id + ", name=" + name + ", marks=" + marks
+                    + ", password=" + password + "}";
         }
     }
 
-    public static void main(String[] args) {
-        String fileName = "students.dat";
-
-        Student[] original = {
-            new Student("Amit", 85, "amit123"),
-            new Student("Riya", 92, "riya456"),
-            new Student("Kiran", 78, "kiran789")
+    public static void main(String[] args) throws Exception
+    {
+        // Array of objects to save
+        Student[] students = {
+            new Student(1, "Heni", 85, "heni@123"),
+            new Student(2, "Riya", 90, "riya@456"),
+            new Student(3, "Krisha", 78, "krisha@789")
         };
 
         System.out.println("Before saving:");
-        for (Student s : original) {
+        for (Student s : students)
+        {
             System.out.println(s);
         }
 
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
-            out.writeObject(original);
-            System.out.println("\nSaved to " + fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        Student[] loaded;
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
-            loaded = (Student[]) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        System.out.println("\nAfter loading:");
-        for (Student s : loaded) {
-            System.out.println(s);
+        // Saving the whole array into the file students.dat
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("students.dat")))
+        {
+            out.writeObject(students);
         }
 
         System.out.println();
-        for (int i = 0; i < original.length; i++) {
-            boolean sameName = original[i].name.equals(loaded[i].name);
-            boolean sameMarks = original[i].marks == loaded[i].marks;
-            boolean passwordSaved = loaded[i].password != null;
-            System.out.println(original[i].name + " -> name same: " + sameName
-                    + ", marks same: " + sameMarks
-                    + ", password saved: " + passwordSaved);
+        System.out.println("Saved " + students.length + " students to students.dat");
+
+        // Reading the array back from the file into fresh objects
+        Student[] loaded;
+
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("students.dat")))
+        {
+            loaded = (Student[]) in.readObject();
         }
 
-        System.out.println("\nSame object? " + (original[0] == loaded[0]));
+        System.out.println();
+        System.out.println("After loading:");
+        for (Student s : loaded)
+        {
+            System.out.println(s);
+        }
+
+        // Checking that id, name and marks are the same as before
+        boolean same = true;
+
+        for (int i = 0; i < students.length; i++)
+        {
+            if (students[i].id != loaded[i].id
+                    || !students[i].name.equals(loaded[i].name)
+                    || students[i].marks != loaded[i].marks)
+            {
+                same = false;
+            }
+        }
+
+        System.out.println();
+        System.out.println("Values survived (id, name, marks): " + same);
+        System.out.println("Loaded objects are new objects: " + (loaded[0] != students[0]));
+        System.out.println("Password (transient) was saved: " + (loaded[0].password != null));
     }
 }

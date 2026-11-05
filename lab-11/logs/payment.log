@@ -1,4 +1,3 @@
-2026-10-28 11:00:00 INFO Payment request received
-2026-10-28 11:00:02 INFO Payment approved
-2026-10-28 11:05:30 ERROR Card declined
-2026-10-28 11:06:00 INFO Receipt sent
+INFO Payment received 500
+ERROR Payment failed for order 12
+INFO Refund issued

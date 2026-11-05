@@ -1,83 +1,107 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+// Program: Log analyzer using Path and Files
+
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
-public class LogAnalyzer {
+public class LogAnalyzer
+{
+    // Totals for all files
+    static int totalLines = 0;
+    static int totalMatches = 0;
+    static long totalSize = 0;
 
-    public static void main(String[] args) {
-        Path folder = Paths.get("logs");
-        String keyword = "ERROR";
+    // Creates a text file with the given lines
+    static void createFile(Path file, String[] lines) throws Exception
+    {
+        Files.write(file, Arrays.asList(lines));
+    }
 
-        List<Path> files = new ArrayList<>();
-        files.add(folder.resolve("app.log"));
-        files.add(folder.resolve("payment.log"));
-        files.add(folder.resolve("system.log"));
+    // Reads a file line by line, counts lines and keyword matches, prints its size
+    static void analyzeFile(Path file, String keyword) throws Exception
+    {
+        // Reading all lines of the file
+        List<String> lines = Files.readAllLines(file);
 
-        try {
-            Files.createDirectories(folder);
+        int matches = 0;
 
-            Files.write(files.get(0), Arrays.asList(
-                    "2026-10-28 10:00:01 INFO Server started",
-                    "2026-10-28 10:00:05 INFO User login: amit",
-                    "2026-10-28 10:01:10 ERROR Database connection failed",
-                    "2026-10-28 10:01:15 INFO Retrying connection",
-                    "2026-10-28 10:01:20 ERROR Database connection failed again"));
-
-            Files.write(files.get(1), Arrays.asList(
-                    "2026-10-28 11:00:00 INFO Payment request received",
-                    "2026-10-28 11:00:02 INFO Payment approved",
-                    "2026-10-28 11:05:30 ERROR Card declined",
-                    "2026-10-28 11:06:00 INFO Receipt sent"));
-
-            Files.write(files.get(2), Arrays.asList(
-                    "2026-10-28 12:00:00 INFO Disk check ok",
-                    "2026-10-28 12:10:00 WARN Memory usage high",
-                    "2026-10-28 12:20:00 INFO Cleanup done"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        int totalLines = 0;
-        int keywordLines = 0;
-
-        for (Path file : files) {
-            int fileLines = 0;
-            int fileKeywordLines = 0;
-
-            try (BufferedReader reader = Files.newBufferedReader(file)) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    fileLines++;
-                    if (line.contains(keyword)) {
-                        fileKeywordLines++;
-                    }
-                }
-
-                BasicFileAttributes attrs = Files.readAttributes(file, BasicFileAttributes.class);
-
-                System.out.println(file.getFileName()
-                        + " -> size: " + attrs.size() + " bytes"
-                        + ", lines: " + fileLines
-                        + ", '" + keyword + "' lines: " + fileKeywordLines);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
+        // Checking every line for the keyword (ignoring upper/lower case)
+        for (String line : lines)
+        {
+            if (line.toLowerCase().contains(keyword.toLowerCase()))
+            {
+                matches++;
             }
-
-            totalLines += fileLines;
-            keywordLines += fileKeywordLines;
         }
 
+        // Getting the size of the file from its attributes
+        BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
+        long size = attr.size();
+
+        System.out.println("File: " + file.getFileName());
+        System.out.println("  Lines   : " + lines.size());
+        System.out.println("  Matches : " + matches);
+        System.out.println("  Size    : " + size + " bytes");
         System.out.println();
-        System.out.println("Total files: " + files.size());
-        System.out.println("Total lines: " + totalLines);
-        System.out.println("Lines containing '" + keyword + "': " + keywordLines);
+
+        // Adding to the totals
+        totalLines = totalLines + lines.size();
+        totalMatches = totalMatches + matches;
+        totalSize = totalSize + size;
+    }
+
+    public static void main(String[] args) throws Exception
+    {
+        // Creating the logs folder (nothing happens if it already exists)
+        Path folder = Paths.get("logs");
+        Files.createDirectories(folder);
+
+        // Lines of each log file
+        String[] appLines = {
+            "INFO App started",
+            "ERROR Database connection failed",
+            "INFO User login ok",
+            "WARN Disk space low",
+            "ERROR Null pointer in module"
+        };
+
+        String[] paymentLines = {
+            "INFO Payment received 500",
+            "ERROR Payment failed for order 12",
+            "INFO Refund issued"
+        };
+
+        String[] systemLines = {
+            "INFO System booted",
+            "WARN High memory usage",
+            "INFO Backup completed",
+            "ERROR Service crashed",
+            "INFO Shutdown complete"
+        };
+
+        // Creating the three text files inside the logs folder
+        Path appFile = folder.resolve("app.log");
+        Path paymentFile = folder.resolve("payment.log");
+        Path systemFile = folder.resolve("system.log");
+
+        createFile(appFile, appLines);
+        createFile(paymentFile, paymentLines);
+        createFile(systemFile, systemLines);
+
+        // Keyword to search
+        String keyword = "error";
+
+        System.out.println("Keyword: " + keyword);
+        System.out.println();
+
+        // Analyzing each file
+        analyzeFile(appFile, keyword);
+        analyzeFile(paymentFile, keyword);
+        analyzeFile(systemFile, keyword);
+
+        // Printing the totals
+        System.out.println("Total lines : " + totalLines);
+        System.out.println("Total lines containing \"" + keyword + "\" : " + totalMatches);
+        System.out.println("Total size  : " + totalSize + " bytes");
     }
 }

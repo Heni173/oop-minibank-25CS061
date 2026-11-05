@@ -1,1 +1,1 @@
-This is a sample project
+This is the readme file
