@@ -1,52 +1,85 @@
 import java.util.*;
 
-record Vehicle (String number , String type){}
+record Vehicle(String number, String type) {}
 
 class TollBooth
 {
-  public static void main(String a[])
+    public static void main(String[] args)
     {
-        int totalToll=0;
-        int bike=0;
-        int car=0;
-        int truck=0;
+        int totalToll = 0;
+        int bike = 0;
+        int car = 0;
+        int truck = 0;
 
         Scanner sc = new Scanner(System.in);
 
+        // Taking vehicle details until user enters done
         while(true)
         {
-            String type=sc.next();
-
-            if(type.equalsIgnoreCase("done"))
-            break;
-
+            System.out.print("Enter vehicle number or done:");
             String number = sc.next();
-            Vehicle v = new Vehicle(number,type);
-            int toll=0;
 
-            switch(v.type())
+            if(number.equalsIgnoreCase("done"))
+                break;
+
+            System.out.print("Enter vehicle type:");
+            String type = sc.next().toLowerCase();
+
+            // Creating Vehicle record
+            Vehicle v = new Vehicle(number, type);
+
+            // Calculating toll using switch expression
+            int toll = switch(v.type())
             {
-              case "Bike" : toll=20;
-              bike++;
-              break;
+                case "bike" -> {
+                    bike++;
+                    yield 20;
+                }
+                case "car" -> {
+                    car++;
+                    yield 50;
+                }
+                case "truck" -> {
+                    truck++;
+                    yield 150;
+                }
+                default -> {
+                    System.out.println("Invalid vehicle type!");
+                    yield 0;
+                }
+            };
 
-              case "Car" : toll=50;
-              car++;
-              break;
-
-              case "Truck" : toll=150;
-              truck++;
-              break;
-
-            default : toll=0;
+            if(toll > 0)
+            {
+                totalToll = totalToll + toll;
+                System.out.println(v.type() + " passed with toll = " + toll);
             }
-            
-            System.out.println(v.type() + " passed with the toll=" + toll);
-            totalToll+=toll;
-        } 
-          System.out.println("Total bike passed : " + bike);
-          System.out.println("Total car passed : " + bike);
-          System.out.println("Total truck passed : " + bike);
-          System.out.println("Total toll collected =  " + totalToll);
         }
+
+        // Printing total toll and vehicle counts
+        System.out.println("Total bike passed: " + bike);
+        System.out.println("Total car passed: " + car);
+        System.out.println("Total truck passed: " + truck);
+        System.out.println("Total toll: " + totalToll);
+
+        // Finding the vehicle type with the highest count
+        if(bike == 0 && car == 0 && truck == 0)
+        {
+            System.out.println("Most frequent: None");
+        }
+        else if(bike >= car && bike >= truck)
+        {
+            System.out.println("Most frequent: bike");
+        }
+        else if(car >= bike && car >= truck)
+        {
+            System.out.println("Most frequent: car");
+        }
+        else
+        {
+            System.out.println("Most frequent: truck");
+        }
+
+        sc.close();
+    }
 }

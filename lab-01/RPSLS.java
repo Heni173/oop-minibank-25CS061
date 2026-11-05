@@ -1,56 +1,31 @@
+
 import java.util.*;
 
+// Enum for all available moves
 enum Move
 {
-    ROCK,
-    PAPER,
-    SCISSORS,
-    LIZARD,
-    SPOCK
+    ROCK, PAPER, SCISSORS, LIZARD, SPOCK
 }
 
 class RPSLS
 {
+    // Method to find the winner using switch expression
     public static int winner(Move a, Move b)
     {
         if(a == b)
             return 0;
 
-        switch(a)
+        return switch(a)
         {
-            case ROCK:
-                if(b == Move.SCISSORS || b == Move.LIZARD)
-                    return 1;
-                else
-                    return -1;
-
-            case PAPER:
-                if(b == Move.ROCK || b == Move.SPOCK)
-                    return 1;
-                else
-                    return -1;
-
-            case SCISSORS:
-                if(b == Move.PAPER || b == Move.LIZARD)
-                    return 1;
-                else
-                    return -1;
-
-            case LIZARD:
-                if(b == Move.PAPER || b == Move.SPOCK)
-                    return 1;
-                else
-                    return -1;
-
-            case SPOCK:
-                if(b == Move.ROCK || b == Move.SCISSORS)
-                    return 1;
-                else
-                    return -1;
-        }
-        return 0;
+            case ROCK -> (b == Move.SCISSORS || b == Move.LIZARD) ? 1 : -1;
+            case PAPER -> (b == Move.ROCK || b == Move.SPOCK) ? 1 : -1;
+            case SCISSORS -> (b == Move.PAPER || b == Move.LIZARD) ? 1 : -1;
+            case LIZARD -> (b == Move.PAPER || b == Move.SPOCK) ? 1 : -1;
+            case SPOCK -> (b == Move.ROCK || b == Move.SCISSORS) ? 1 : -1;
+        };
     }
 
+    // Method to display the winning rule
     public static String message(Move a, Move b)
     {
         if((a==Move.SCISSORS && b==Move.PAPER)||(b==Move.SCISSORS && a==Move.PAPER))
@@ -94,19 +69,24 @@ class RPSLS
         int playerScore = 0;
         int computerScore = 0;
 
+        // Getting all enum values
         Move[] moves = Move.values();
 
-        for(int i=1;i<=5;i++)
+        // Playing 5 rounds
+        for(int i = 1; i <= 5; i++)
         {
             System.out.println("\nRound " + i);
             System.out.print("Enter Move (ROCK/PAPER/SCISSORS/LIZARD/SPOCK): ");
 
             Move player = Move.valueOf(sc.next().toUpperCase());
+
+            // Selecting a random computer move
             Move computer = moves[r.nextInt(5)];
 
             System.out.println("Player : " + player);
             System.out.println("Computer : " + computer);
 
+            // Finding the round winner
             int result = winner(player, computer);
 
             if(result == 0)
@@ -130,10 +110,12 @@ class RPSLS
             }
         }
 
+        // Displaying final score
         System.out.println("\nFinal Score");
         System.out.println("You = " + playerScore);
         System.out.println("Computer = " + computerScore);
 
+        // Displaying overall winner
         if(playerScore > computerScore)
             System.out.println("You Win " + playerScore + "-" + computerScore);
         else if(computerScore > playerScore)
