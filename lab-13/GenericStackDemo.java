@@ -11,6 +11,13 @@ public class GenericStackDemo {
         // Constructor
         @SuppressWarnings("unchecked")
         Stack(int size) {
+
+            if (size <= 0) {
+                throw new IllegalArgumentException(
+                    "Stack size must be greater than zero"
+                );
+            }
+
             items = (T[]) new Object[size];
             top = -1;
         }
@@ -25,6 +32,7 @@ public class GenericStackDemo {
 
             top++;
             items[top] = value;
+
             System.out.println(value + " added");
         }
 
@@ -37,6 +45,7 @@ public class GenericStackDemo {
             }
 
             T value = items[top];
+
             items[top] = null;
             top--;
 

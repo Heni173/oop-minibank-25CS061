@@ -4,6 +4,7 @@ public class GenericContainersDemo {
 
     // Generic Box class
     static class Box<T> {
+
         private T value;
 
         Box(T value) {
@@ -21,6 +22,7 @@ public class GenericContainersDemo {
 
     // Generic Pair class
     static class Pair<A, B> {
+
         private A first;
         private B second;
 
@@ -40,6 +42,13 @@ public class GenericContainersDemo {
 
     // Generic method to return first element of an array
     static <T> T first(T[] array) {
+
+        if (array == null || array.length == 0) {
+            throw new IllegalArgumentException(
+                "Array cannot be empty or null"
+            );
+        }
+
         return array[0];
     }
 
@@ -49,14 +58,17 @@ public class GenericContainersDemo {
         System.out.println("--- Box ---");
 
         Box<String> nameBox = new Box<>("Heni");
+
         System.out.println("Name: " + nameBox.get());
 
         // Changing the value using set()
         nameBox.set("Krisha");
+
         System.out.println("Updated Name: " + nameBox.get());
 
         // Using Box with Integer
         Box<Integer> ageBox = new Box<>(19);
+
         System.out.println("Age: " + ageBox.get());
 
         // Using Pair with different data types
