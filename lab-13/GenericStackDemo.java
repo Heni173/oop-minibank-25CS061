@@ -1,99 +1,87 @@
-import java.util.Arrays;
+// Program: Generic Stack using Array
 
 public class GenericStackDemo {
 
-    static class MyStack<T> {
+    // Generic Stack class
+    static class Stack<T> {
+
         private T[] items;
-        private int size;
+        private int top;
 
+        // Constructor
         @SuppressWarnings("unchecked")
-        MyStack() {
-            items = (T[]) new Object[2];
+        Stack(int size) {
+            items = (T[]) new Object[size];
+            top = -1;
         }
 
-        void push(T item) {
-            if (size == items.length) {
-                items = Arrays.copyOf(items, items.length * 2);
+        // Add element to stack
+        void push(T value) {
+
+            if (top == items.length - 1) {
+                System.out.println("Stack is full!");
+                return;
             }
-            items[size++] = item;
+
+            top++;
+            items[top] = value;
+            System.out.println(value + " added");
         }
 
+        // Remove element from stack
         T pop() {
-            if (isEmpty()) {
-                throw new IllegalStateException("Stack is empty");
+
+            if (top == -1) {
+                System.out.println("Stack is empty!");
+                return null;
             }
-            T item = items[--size];
-            items[size] = null;
-            return item;
+
+            T value = items[top];
+            items[top] = null;
+            top--;
+
+            return value;
         }
 
-        T peek() {
-            if (isEmpty()) {
-                throw new IllegalStateException("Stack is empty");
-            }
-            return items[size - 1];
-        }
-
+        // Check whether stack is empty
         boolean isEmpty() {
-            return size == 0;
-        }
-
-        int size() {
-            return size;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder("[");
-            for (int i = 0; i < size; i++) {
-                if (i > 0) {
-                    sb.append(", ");
-                }
-                sb.append(items[i]);
-            }
-            return sb.append("]").toString();
+            return top == -1;
         }
     }
 
     public static void main(String[] args) {
 
-        System.out.println("--- Integer stack ---");
-        MyStack<Integer> numbers = new MyStack<>();
-        numbers.push(10);
-        numbers.push(20);
-        numbers.push(30);
-        numbers.push(40);
-        numbers.push(50);
-        System.out.println("Stack: " + numbers);
-        System.out.println("Top: " + numbers.peek());
-        int popped = numbers.pop();
-        System.out.println("Popped: " + popped);
-        System.out.println("Size: " + numbers.size());
-        int sum = numbers.pop() + numbers.pop();
-        System.out.println("Sum of next two pops: " + sum);
-        System.out.println("Size: " + numbers.size());
+        // Stack of Integer
+        System.out.println("--- Integer Stack ---");
 
-        System.out.println("--- String stack ---");
-        MyStack<String> words = new MyStack<>();
-        words.push("apple");
-        words.push("banana");
-        words.push("cherry");
-        System.out.println("Stack: " + words);
-        while (!words.isEmpty()) {
-            System.out.println("Popped: " + words.pop());
+        Stack<Integer> numberStack = new Stack<>(5);
+
+        numberStack.push(10);
+        numberStack.push(20);
+        numberStack.push(30);
+
+        System.out.println("Removed: " + numberStack.pop());
+        System.out.println("Removed: " + numberStack.pop());
+
+        // Stack of String
+        System.out.println("\n--- String Stack ---");
+
+        Stack<String> nameStack = new Stack<>(5);
+
+        nameStack.push("Heni");
+        nameStack.push("Krisha");
+        nameStack.push("Riya");
+
+        System.out.println("Removed: " + nameStack.pop());
+        System.out.println("Removed: " + nameStack.pop());
+
+        // Checking empty case
+        System.out.println("\n--- Empty Stack Check ---");
+
+        while (!nameStack.isEmpty()) {
+            System.out.println("Removed: " + nameStack.pop());
         }
 
-        System.out.println("--- Empty case ---");
-        System.out.println("Is empty: " + words.isEmpty());
-        try {
-            words.pop();
-        } catch (IllegalStateException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-        try {
-            words.peek();
-        } catch (IllegalStateException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        System.out.println("Removed: " + nameStack.pop());
     }
 }

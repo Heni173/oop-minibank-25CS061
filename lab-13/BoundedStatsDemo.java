@@ -1,26 +1,36 @@
+// Program: Bounded Generics to calculate average
+
 public class BoundedStatsDemo {
 
+    // Generic method with Number as upper bound
     static <N extends Number> double average(N[] values) {
-        if (values == null || values.length == 0) {
-            return 0.0;
-        }
+
         double sum = 0;
-        for (N value : values) {
-            sum += value.doubleValue();
+
+        for (int i = 0; i < values.length; i++) {
+            sum = sum + values[i].doubleValue();
         }
+
         return sum / values.length;
     }
 
     public static void main(String[] args) {
 
-        Integer[] integers = {10, 20, 30, 40};
-        Double[] doubles = {1.5, 2.5, 3.5};
-        Long[] longs = {100L, 200L, 300L};
-        Integer[] empty = {};
+        // Integer array
+        Integer[] intValues = {10, 20, 30, 40};
 
-        System.out.println("Integer average: " + average(integers));
-        System.out.println("Double average: " + average(doubles));
-        System.out.println("Long average: " + average(longs));
-        System.out.println("Empty array average: " + average(empty));
+        // Double array
+        Double[] doubleValues = {10.5, 20.5, 30.5};
+
+        // Long array
+        Long[] longValues = {100L, 200L, 300L};
+
+        System.out.println("--- Average of Different Number Types ---");
+
+        System.out.println("Integer Average: " + average(intValues));
+
+        System.out.println("Double Average: " + average(doubleValues));
+
+        System.out.println("Long Average: " + average(longValues));
     }
 }
