@@ -1,55 +1,83 @@
 package storage;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import model.Account;
-import service.AccountService;
-import java.io.IOException;
-import java.nio.file.Path;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
+import model.Account;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import service.AccountService;
 
-public class AccountStorageTest {
+// Tests for AccountStorage (uses a separate test file, not accounts.dat)
+public class AccountStorageTest
+{
+    private String testFile = "test-accounts.dat";
 
-    @TempDir
-    Path tempDir;
-
-    @Test
-    void saveAndReloadKeepsDataUnchanged() throws IOException {
-        List<Account> original = new ArrayList<>();
-        original.add(new Account(1, "Dhruvi", 500.0));
-        original.add(new Account(2, "Amit", 0.0));
-        original.add(new Account(3, "Riya Shah", 1234.75));
-
-        Path file = tempDir.resolve("accounts.dat");
-        AccountStorage.save(original, file);
-        List<Account> loaded = AccountStorage.load(file);
-
-        assertEquals(original, loaded);
+    // Deleting the test file after every test
+    @AfterEach
+    public void cleanUp()
+    {
+        new File(testFile).delete();
     }
 
+    // Saved accounts must come back with the same values
     @Test
-    void loadingMissingFileGivesEmptyList() throws IOException {
-        List<Account> loaded = AccountStorage.load(tempDir.resolve("missing.dat"));
+    public void saveAndLoadKeepsValues() throws Exception
+    {
+        ArrayList<Account> list = new ArrayList<Account>();
+        list.add(new Account(1001, "Heni", 1000));
+        list.add(new Account(1002, "Riya", 500));
+
+        AccountStorage.save(list, testFile);
+        ArrayList<Account> loaded = AccountStorage.load(testFile);
+
+        assertEquals(2, loaded.size());
+        assertEquals("Heni", loaded.get(0).getName());
+        assertEquals(500, loaded.get(1).getBalance());
+    }
+
+    // Loading a missing file must give an empty list
+    @Test
+    public void loadingMissingFileGivesEmptyList() throws Exception
+    {
+        ArrayList<Account> loaded = AccountStorage.load("no-such-file.dat");
+
         assertTrue(loaded.isEmpty());
     }
 
+    // Full round trip through the service: every field must be unchanged after reload
     @Test
-    void reloadedServiceKeepsCountAndContinuesIds() throws IOException {
-        AccountService first = new AccountService();
-        first.addAccount("Dhruvi", 500);
-        first.addAccount("Amit", 100);
+    public void reloadedDataIsUnchanged() throws Exception
+    {
+        // Building some data using the service
+        AccountService service = new AccountService();
+        service.addAccount("Heni", 1000);
+        service.addAccount("Riya", 500.50);
+        service.deposit(1001, 250);
 
-        Path file = tempDir.resolve("accounts.dat");
-        AccountStorage.save(first.getAll(), file);
+        // Saving to the file and loading into a brand new service
+        AccountStorage.save(service.getAccounts(), testFile);
+        AccountService reloaded = new AccountService(AccountStorage.load(testFile));
 
-        AccountService second = new AccountService();
-        second.replaceAll(AccountStorage.load(file));
+        // Same number of accounts
+        assertEquals(service.getCount(), reloaded.getCount());
 
-        assertEquals(2, second.count());
-        assertEquals(3, second.addAccount("Riya", 50).getId());
+        // Every account has the same account number, name and balance
+        for (int i = 0; i < service.getCount(); i++)
+        {
+            Account before = service.getAccounts().get(i);
+            Account after = reloaded.getAccounts().get(i);
+
+            assertEquals(before.getAccountNo(), after.getAccountNo());
+            assertEquals(before.getName(), after.getName());
+            assertEquals(before.getBalance(), after.getBalance());
+
+            // They are fresh objects, not the same objects
+            assertNotSame(before, after);
+        }
+
+        // The next new account number continues after the reloaded ones
+        assertEquals(1003, reloaded.addAccount("Neha", 100).getAccountNo());
     }
 }

@@ -1,41 +1,35 @@
 package storage;
 
-import model.Account;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
+import model.Account;
 
-public class AccountStorage {
-
-    public static void save(List<Account> accounts, Path file) throws IOException {
-        try (DataOutputStream out = new DataOutputStream(Files.newOutputStream(file))) {
-            out.writeInt(accounts.size());
-            for (Account account : accounts) {
-                out.writeInt(account.getId());
-                out.writeUTF(account.getHolderName());
-                out.writeDouble(account.getBalance());
-            }
+// Storage class: saves and loads the list of accounts from a file
+public class AccountStorage
+{
+    // Saves all accounts into the file
+    public static void save(ArrayList<Account> accounts, String fileName) throws IOException
+    {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName)))
+        {
+            out.writeObject(accounts);
         }
     }
 
-    public static List<Account> load(Path file) throws IOException {
-        List<Account> accounts = new ArrayList<>();
-        if (!Files.exists(file)) {
-            return accounts;
+    // Loads all accounts from the file (empty list if the file does not exist)
+    @SuppressWarnings("unchecked")
+    public static ArrayList<Account> load(String fileName) throws IOException, ClassNotFoundException
+    {
+        File file = new File(fileName);
+
+        if (!file.exists())
+        {
+            return new ArrayList<Account>();
         }
-        try (DataInputStream in = new DataInputStream(Files.newInputStream(file))) {
-            int count = in.readInt();
-            for (int i = 0; i < count; i++) {
-                int id = in.readInt();
-                String name = in.readUTF();
-                double balance = in.readDouble();
-                accounts.add(new Account(id, name, balance));
-            }
+
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName)))
+        {
+            return (ArrayList<Account>) in.readObject();
         }
-        return accounts;
     }
 }

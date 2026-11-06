@@ -1,56 +1,45 @@
 package model;
 
-import java.util.Objects;
+import java.io.Serializable;
 
-public class Account {
+// Model class: one bank account (Serializable, so it can be saved in a file)
+public class Account implements Serializable
+{
+    private static final long serialVersionUID = 1L;
 
-    private final int id;
-    private final String holderName;
+    private int accountNo;
+    private String name;
     private double balance;
 
-    public Account(int id, String holderName, double balance) {
-        this.id = id;
-        this.holderName = holderName;
+    public Account(int accountNo, String name, double balance)
+    {
+        this.accountNo = accountNo;
+        this.name = name;
         this.balance = balance;
     }
 
-    public int getId() {
-        return id;
+    public int getAccountNo()
+    {
+        return accountNo;
     }
 
-    public String getHolderName() {
-        return holderName;
+    public String getName()
+    {
+        return name;
     }
 
-    public double getBalance() {
+    public double getBalance()
+    {
         return balance;
     }
 
-    public void deposit(double amount) {
-        balance += amount;
+    public void setBalance(double balance)
+    {
+        this.balance = balance;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Account)) {
-            return false;
-        }
-        Account other = (Account) o;
-        return id == other.id
-                && holderName.equals(other.holderName)
-                && Double.compare(balance, other.balance) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, holderName, balance);
-    }
-
-    @Override
-    public String toString() {
-        return "Account{id=" + id + ", holder=" + holderName + ", balance=" + balance + "}";
+    public String toString()
+    {
+        return accountNo + " | " + name + " | Rs. " + balance;
     }
 }

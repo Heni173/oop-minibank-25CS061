@@ -1,39 +1,44 @@
 package service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class AccountServiceTest {
+// Tests for AccountService
+public class AccountServiceTest
+{
+    // Adding an account must increase the count
+    @Test
+    public void addingIncreasesCount()
+    {
+        AccountService service = new AccountService();
+        assertEquals(0, service.getCount());
 
-    private AccountService service;
+        service.addAccount("Heni", 1000);
+        assertEquals(1, service.getCount());
 
-    @BeforeEach
-    void setUp() {
-        service = new AccountService();
+        service.addAccount("Riya", 500);
+        assertEquals(2, service.getCount());
     }
 
+    // A blank name is an invalid action, so it must throw an exception
     @Test
-    void addingAccountIncreasesCount() {
-        assertEquals(0, service.count());
-        service.addAccount("Dhruvi", 500);
-        assertEquals(1, service.count());
-        service.addAccount("Amit", 0);
-        assertEquals(2, service.count());
+    public void blankNameThrowsException()
+    {
+        AccountService service = new AccountService();
+
+        assertThrows(IllegalArgumentException.class, () -> service.addAccount("   ", 100));
+        assertEquals(0, service.getCount());     // nothing was added
     }
 
+    // Withdrawing more than the balance must throw an exception
     @Test
-    void negativeOpeningBalanceThrows() {
-        assertThrows(IllegalArgumentException.class,
-                () -> service.addAccount("Dhruvi", -10));
-    }
+    public void withdrawMoreThanBalanceThrowsException()
+    {
+        AccountService service = new AccountService();
+        int no = service.addAccount("Heni", 100).getAccountNo();
 
-    @Test
-    void depositToUnknownAccountThrows() {
-        service.addAccount("Dhruvi", 500);
-        assertThrows(IllegalArgumentException.class,
-                () -> service.deposit(99, 100));
+        assertThrows(IllegalArgumentException.class, () -> service.withdraw(no, 500));
+        assertEquals(100, service.find(no).getBalance());   // balance unchanged
     }
 }

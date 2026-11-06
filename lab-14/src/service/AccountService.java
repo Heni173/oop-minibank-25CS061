@@ -1,59 +1,105 @@
 package service;
 
-import model.Account;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import model.Account;
 
-public class AccountService {
+// Service class: all the bank rules, using an ArrayList
+public class AccountService
+{
+    private ArrayList<Account> accounts = new ArrayList<Account>();
+    private int nextNumber = 1001;      // account number of the next new account
 
-    private final List<Account> accounts = new ArrayList<>();
-    private int nextId = 1;
-
-    public Account addAccount(String holderName, double openingBalance) {
-        if (holderName == null || holderName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Holder name must not be blank");
-        }
-        if (openingBalance < 0) {
-            throw new IllegalArgumentException("Opening balance must not be negative");
-        }
-        Account account = new Account(nextId++, holderName.trim(), openingBalance);
-        accounts.add(account);
-        return account;
+    // Empty bank
+    public AccountService()
+    {
     }
 
-    public int count() {
+    // Bank started with accounts that were loaded from the file
+    public AccountService(ArrayList<Account> existing)
+    {
+        accounts = existing;
+
+        // Next number must be bigger than every existing number
+        for (Account a : accounts)
+        {
+            if (a.getAccountNo() >= nextNumber)
+            {
+                nextNumber = a.getAccountNo() + 1;
+            }
+        }
+    }
+
+    // Adds a new account, throws an exception for invalid data
+    public Account addAccount(String name, double openingBalance)
+    {
+        if (name == null || name.trim().isEmpty())
+        {
+            throw new IllegalArgumentException("Name must not be blank");
+        }
+
+        if (openingBalance < 0)
+        {
+            throw new IllegalArgumentException("Opening balance must not be negative");
+        }
+
+        Account acc = new Account(nextNumber, name.trim(), openingBalance);
+        nextNumber++;
+        accounts.add(acc);
+
+        return acc;
+    }
+
+    // Adds money to an account
+    public void deposit(int accountNo, double amount)
+    {
+        if (amount <= 0)
+        {
+            throw new IllegalArgumentException("Amount must be greater than 0");
+        }
+
+        Account acc = find(accountNo);
+        acc.setBalance(acc.getBalance() + amount);
+    }
+
+    // Takes money out of an account
+    public void withdraw(int accountNo, double amount)
+    {
+        if (amount <= 0)
+        {
+            throw new IllegalArgumentException("Amount must be greater than 0");
+        }
+
+        Account acc = find(accountNo);
+
+        if (amount > acc.getBalance())
+        {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+
+        acc.setBalance(acc.getBalance() - amount);
+    }
+
+    // Finds an account by its number, throws an exception if it is not there
+    public Account find(int accountNo)
+    {
+        for (Account a : accounts)
+        {
+            if (a.getAccountNo() == accountNo)
+            {
+                return a;
+            }
+        }
+
+        throw new IllegalArgumentException("Account not found: " + accountNo);
+    }
+
+    public int getCount()
+    {
         return accounts.size();
     }
 
-    public List<Account> getAll() {
-        return Collections.unmodifiableList(accounts);
-    }
-
-    public Account findById(int id) {
-        for (Account account : accounts) {
-            if (account.getId() == id) {
-                return account;
-            }
-        }
-        throw new IllegalArgumentException("Account not found: " + id);
-    }
-
-    public void deposit(int id, double amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("Deposit amount must be positive");
-        }
-        findById(id).deposit(amount);
-    }
-
-    public void replaceAll(List<Account> loaded) {
-        accounts.clear();
-        accounts.addAll(loaded);
-        nextId = 1;
-        for (Account account : loaded) {
-            if (account.getId() >= nextId) {
-                nextId = account.getId() + 1;
-            }
-        }
+    public ArrayList<Account> getAccounts()
+    {
+        return accounts;
     }
 }
