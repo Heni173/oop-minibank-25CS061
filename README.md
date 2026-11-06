@@ -608,7 +608,7 @@ java -cp out service.PracticalDemo
 |---|---|
 | **Name** | Heni Patel |
 | **Enrollment number** | 25CS061 |
-| **Course** | Object Oriented Programming (CEUC203) |
+| **Course** | Object Oriented Programming (CEUE203) |
 | **Institute** | CHARUSAT University (CSPIT) |
 
 This project was created for academic purposes.
