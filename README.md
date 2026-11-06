@@ -536,7 +536,11 @@ java -cp out service.PracticalDemo
 
 | Practical | Topic | Where to look |
 |---|---|---|
-| 1 – 5 | Foundation labs: classes, encapsulation, inheritance, abstract classes, polymorphism, `equals`, `hashCode`, `clone`, nested classes, records, enums, regex validation | `model/`, `util/Validator`, `util/CommandParser` |
+| 1 | Environment and project setup; the menu shell: `record` (`BankInfo`), `enum`, `Scanner` input, `switch`, a loop that runs until the user exits, goodbye message | `service/MiniBank` (menu loop), `service/PracticalDemo` (`BankInfo` header), `model/TransactionType` (enum) |
+| 2 | `Customer` and `Account`: encapsulation (private fields, the balance changes only through `deposit` and `withdraw`, no public setter), `private static` counters that generate `CUST101` and `AC0001`, constructors, getters, an array of objects | `model/Customer`, `model/Account` |
+| 3 | Object behaviour: `toString`, `equals` and `hashCode` based on the account number, the nested static class `Address`, `Cloneable` with `clone()`, `instanceof` | `Account.toString`, `Account.equals`, `Account.hashCode`, `Customer.Address`, `Customer.clone`, `service/PracticalDemo` |
+| 4 | Validation and parsing: regular expressions with `Pattern` (mobile, e-mail, PAN, IFSC), `enum TransactionType`, `record Command`, `String.split`, `StringBuilder` | `util/Validator`, `model/TransactionType`, `model/Command`, `util/CommandParser`, `util/StatementFormatter` |
+| 5 | Inheritance and polymorphism: abstract `Account`, three subclasses with their own interest and withdrawal rules, `super(...)`, pattern `instanceof` | `model/Account`, `model/SavingsAccount`, `model/CurrentAccount`, `model/FixedDepositAccount`, `service/PracticalDemo` |
 | 6 | Interfaces (default, functional, marker), packages, static import, runnable JAR | `Transactable`, `InterestBearing`, `WithdrawRule`, `Premium`, `manifest.txt` |
 | 7 | Custom annotations and reflection | `model/annotation/`, `AnnotationValidator` |
 | 8 | Custom checked exceptions, `try / catch / finally`, try-with-resources | `exception/`, `Account.transfer`, `TransactionLogger` |
