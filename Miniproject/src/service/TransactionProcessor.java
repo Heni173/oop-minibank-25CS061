@@ -16,9 +16,13 @@ import model.Account;
 import model.Command;
 import model.TransactionType;
 
+// Runs transactions on a thread pool, so many transactions can be processed at the same time
 public class TransactionProcessor
 {
+    // Pool of 4 worker threads, submitted tasks wait in a queue until a thread is free
     private final ExecutorService executor = Executors.newFixedThreadPool(4);
+
+    // Thread safe collections and counter, because many pool threads use them together
     private final Map<String, Account> accounts = new ConcurrentHashMap<>();
     private final Queue<Command> succeeded = new ConcurrentLinkedQueue<>();
     private final AtomicInteger failed = new AtomicInteger();
@@ -38,11 +42,13 @@ public class TransactionProcessor
         return accounts.size();
     }
 
+    // Runs any task on the pool
     public void submit(Runnable task)
     {
         executor.execute(task);
     }
 
+    // Runs one deposit or withdraw on the pool and records whether it succeeded or failed
     public void submitTransaction(String accountNumber, TransactionType type, long amount)
     {
         executor.execute(() ->
@@ -73,6 +79,7 @@ public class TransactionProcessor
                     return;
                 }
 
+                // Reached only when the deposit or withdraw did not throw
                 succeeded.add(new Command(type, accountNumber, amount));
             }
             catch(BankException e)
@@ -85,6 +92,7 @@ public class TransactionProcessor
         });
     }
 
+    // Returns a copy, so the caller cannot change the internal queue
     public List<Command> getSucceeded()
     {
         return new ArrayList<>(succeeded);
@@ -95,12 +103,16 @@ public class TransactionProcessor
         return failed.get();
     }
 
+    // Stops accepting new tasks and waits for the submitted ones to finish.
+    // Call this before reading the final balances.
     public void stop()
     {
+        // shutdown() lets already submitted tasks complete
         executor.shutdown();
 
         try
         {
+            // Wait up to 1 minute, and force stop if the tasks are still running
             if(!executor.awaitTermination(1, TimeUnit.MINUTES))
             {
                 System.out.println("Timeout : some tasks are still running");

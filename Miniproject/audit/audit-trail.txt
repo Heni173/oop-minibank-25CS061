@@ -9,3 +9,12 @@
 2026-10-30 13:15:04 | transfer | Transfer money | args=[AC0001, AC0002, 100] | OK
 2026-10-30 13:15:15 | statement | Show account statement | args=[AC0001] | OK
 2026-10-30 13:15:51 | processBatch | Process a batch of transactions | args=[[Command[type=DEPOSIT, accountNumber=AC0001, amount=10], Command[type=DEPOSIT, accountNumber=AC0002...] | OK
+2026-11-06 19:52:03 | openAccount | Open a new account | args=[FD, XYZ, 9632145870, 1000] | OK
+2026-11-06 19:52:44 | deposit | Deposit money | args=[AC0002, 500] | OK
+2026-11-06 19:53:04 | withdraw | Withdraw money | args=[AC0001, 200] | OK
+2026-11-06 19:53:38 | transfer | Transfer money | args=[AC0001, AC0002, 100] | OK
+2026-11-06 19:54:22 | processBatch | Process a batch of transactions | args=[[Command[type=DEPOSIT, accountNumber=AC0001, amount=10], Command[type=DEPOSIT, accountNumber=AC0002...] | OK
+2026-11-06 19:58:33 | deposit | Deposit money | args=[AC001, 100] | FAILED AccountNotFoundException : Account not found : AC001
+2026-11-06 19:59:48 | withdraw | Withdraw money | args=[AC001, 500000] | FAILED AccountNotFoundException : Account not found : AC001
+2026-11-06 20:01:49 | transfer | Transfer money | args=[AC0002, AC0001, 200000] | FAILED InsufficientFundsException : Insufficient funds in AC0002, short by 196050
+2026-11-06 20:05:43 | deposit | Deposit money | args=[AC0007, 100] | FAILED AccountNotFoundException : Account not found : AC0007

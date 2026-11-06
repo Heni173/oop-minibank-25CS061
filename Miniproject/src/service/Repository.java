@@ -7,14 +7,18 @@ import java.util.Map;
 
 import model.annotation.Id;
 
+// Generic repository : stores any type T that has a field marked with @Id
 public class Repository<T>
 {
+    // Key = value of the @Id field, value = the object
     private final Map<String, T> items = new HashMap<>();
 
+    // Finds the @Id field using reflection and returns its value as a String
     private String extractId(T entity)
     {
         Class<?> cls = entity.getClass();
 
+        // Also checks parent classes, because @Id may be declared in a superclass
         while(cls != null)
         {
             Field[] fields = cls.getDeclaredFields();
@@ -25,6 +29,7 @@ public class Repository<T>
                 {
                     try
                     {
+                        // Needed to read a private field
                         field.setAccessible(true);
 
                         Object value = field.get(entity);
@@ -50,11 +55,13 @@ public class Repository<T>
             cls = cls.getSuperclass();
         }
 
+        // No @Id field in the whole class hierarchy
         throw new IllegalArgumentException(
             "No @Id field found in " + entity.getClass().getSimpleName()
         );
     }
 
+    // Same id replaces the old object
     public T save(T entity)
     {
         if(entity == null)
@@ -78,16 +85,19 @@ public class Repository<T>
         }
     }
 
+    // Returns null if the id is not found
     public T findById(String id)
     {
         return items.get(id);
     }
 
+    // Returns a copy, so changing the list does not affect the repository
     public ArrayList<T> findAll()
     {
         return new ArrayList<>(items.values());
     }
 
+    // True only if something was actually removed
     public boolean delete(String id)
     {
         return items.remove(id) != null;
@@ -98,6 +108,7 @@ public class Repository<T>
         return items.size();
     }
 
+    // N can be any Number type (Integer, Long, Double, etc.)
     public static <N extends Number> double average(N[] values)
     {
         if(values.length == 0)

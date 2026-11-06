@@ -14,8 +14,10 @@ import exception.InsufficientFundsException;
 import model.Account;
 import service.BankService;
 
+// Test class for verifying BankService operations.
 public class BankServiceTest
 {
+    // Creates a new BankService instance using temporary files.
     private BankService newService() throws IOException
     {
         Path folder = Files.createTempDirectory("minibank-test");
@@ -27,6 +29,7 @@ public class BankServiceTest
         );
     }
 
+    // Tests whether depositing money increases the account balance.
     @Test
     public void depositIncreasesBalance() throws Exception
     {
@@ -40,6 +43,7 @@ public class BankServiceTest
         assertEquals(5700L, account.getBalance());
     }
 
+    // Tests whether withdrawing beyond the allowed limit throws an exception.
     @Test
     public void withdrawalOverTheLimitThrowsException() throws Exception
     {
@@ -58,6 +62,7 @@ public class BankServiceTest
         assertEquals(5000L, account.getBalance());
     }
 
+    // Tests whether concurrent deposits maintain the correct account balance.
     @Test
     public void manyConcurrentDepositsKeepBalanceCorrect() throws Exception
     {
@@ -73,6 +78,7 @@ public class BankServiceTest
 
         Thread[] threads = new Thread[threadCount];
 
+        // Creates multiple threads to perform concurrent deposits.
         for(int i = 0; i < threadCount; i++)
         {
             threads[i] = new Thread(() ->
@@ -93,6 +99,7 @@ public class BankServiceTest
             threads[i].start();
         }
 
+        // Waits for all threads to complete their operations.
         for(int i = 0; i < threadCount; i++)
         {
             threads[i].join();
@@ -101,6 +108,7 @@ public class BankServiceTest
         assertEquals(1000L + threadCount * depositsPerThread, account.getBalance());
     }
 
+    // Tests whether money is transferred correctly between two accounts.
     @Test
     public void transferMovesMoneyBetweenAccounts() throws Exception
     {
@@ -118,6 +126,7 @@ public class BankServiceTest
         assertEquals(3500L, to.getBalance());
     }
 
+    // Tests whether an invalid mobile number is rejected.
     @Test
     public void invalidMobileNumberIsRejected() throws Exception
     {
